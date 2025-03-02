@@ -1,5 +1,7 @@
-import React from 'react'
-import Logo from '../../src';  // logo.svg ==> Logo.tsx
+import React from 'react';
+import { OctaEchoPhoneContextProvider } from '../../src';
+import OctaEchoPhoneDevice from './components/OctaEchoPhoneDevice';
+import Logo from './Logo';  // logo.svg ==> Logo.tsx
 //import './App.css'; // ==> ../index.html
 
 function App() {
@@ -18,6 +20,11 @@ function App() {
         >
           Learn React
         </a>
+        <p>
+          <OctaEchoPhoneContextProvider connectionName='Octa Echo Phone' bluetooth={window.navigator.bluetooth}>
+            <OctaEchoPhoneDevice />
+          </OctaEchoPhoneContextProvider>
+        </p>
       </header>
     </div>
   );
