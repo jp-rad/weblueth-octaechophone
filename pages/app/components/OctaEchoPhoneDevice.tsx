@@ -58,13 +58,37 @@ export default function OctaEchoPhoneDevice() {
     };
 
     const [brightnessValue, setBrightnessValue] = useState<number>(0);
+    const [dledValueText, setdLedValueText] = useState<string>("0,0,0")
 
     const handleBrightnessChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const calcLedValue = (value: number, led: number): number => {
+            let adjustedValue = value;
+            const LED_NUM = 3;
+            const MIN_VALUE = 0;
+            const MAX_VALUE = 255;
+            const OFFSET = 127;
+            const TOP_POINT = MAX_VALUE * (LED_NUM - 1) + 1;
+            const isOverTop = (adjustedValue > TOP_POINT);
+            if (isOverTop) {
+                adjustedValue -= TOP_POINT;
+            }
+            const offset = OFFSET * (led + 1) - OFFSET;
+            adjustedValue -= offset;
+            if (isOverTop) {
+                adjustedValue = MAX_VALUE - adjustedValue;
+            }
+            return Math.max(MIN_VALUE, Math.min(MAX_VALUE, adjustedValue));
+        };
         const newValue = Number(event.target.value);
         setBrightnessValue(newValue);
-        octaEchoPhoneService?.setDLED0(newValue);
-        octaEchoPhoneService?.setDLED1(newValue);
-        octaEchoPhoneService?.setDLED2(newValue);
+        const dled0Value = calcLedValue(newValue, 0);
+        const dled1Value = calcLedValue(newValue, 1);
+        const dled2Value = calcLedValue(newValue, 2);
+        setdLedValueText(`${dled0Value},${dled1Value},${dled2Value}`)
+
+        octaEchoPhoneService?.setDLED0(dled0Value);
+        octaEchoPhoneService?.setDLED1(dled1Value);
+        octaEchoPhoneService?.setDLED2(dled2Value);
     };
 
     const [led0State, setLed0State] = useState<boolean>(false);
@@ -111,7 +135,7 @@ export default function OctaEchoPhoneDevice() {
         }
         setKeypad(keypad);
     };
-    
+
     const onKeypadChanged: WbxCustomEventCallback<Keypad> = async event => {
         updateKeypad(event.detail);
     };
@@ -146,8 +170,9 @@ export default function OctaEchoPhoneDevice() {
             CDS: {cdsValue ?? "---"} <button onClick={handleUpdateCDS}>update</button>
             <br />
             LEDs:
-            <input type="range" min="0" max="255" value={brightnessValue} onChange={handleBrightnessChange} />
-            ({brightnessValue})
+            <input type="range" min="0" max="1020" value={brightnessValue} onChange={handleBrightnessChange} />
+            <br />
+            ({brightnessValue}) = [{dledValueText}]
             <br />
             <label>
                 <input type="checkbox" checked={led0State} onChange={handleLed0Toggle} />
@@ -164,6 +189,7 @@ export default function OctaEchoPhoneDevice() {
             <br />
             Buzzer:
             <input type="range" min="0" max="255" value={buzzerValue} onChange={handleBuzzerChange} />
+            <br />
             ({buzzerValue})
             <br />
             Keypad: {keypadText}
