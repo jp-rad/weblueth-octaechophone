@@ -14,11 +14,11 @@ function App() {
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://github.com/jp-rad/weblueth-octaechophone/blob/main/pages/app/App.tsx"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Source Code
         </a>
         <p>
           <OctaEchoPhoneContextProvider connectionName='Octa Echo Phone' bluetooth={window.navigator.bluetooth}>
